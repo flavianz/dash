@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "637758982023",
+    "project_id": "dash-87610",
+    "storage_bucket": "dash-87610.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637758982023:android:e098467045921bf70c7522",
+        "android_client_info": {
+          "package_name": "ch.flavianz.dash"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGi5yjgDAITsVk-9-JjhSB8gtYl2KPgAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
