@@ -17,4 +17,8 @@ extension DateExtension on DateTime {
         } +
         (year == DateTime.now().year ? "" : " ${year - 2000}");
   }
+
+  bool isSameDate(DateTime other) {
+    return year == other.year && month == other.month && other.day == day;
+  }
 }

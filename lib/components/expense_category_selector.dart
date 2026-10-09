@@ -19,6 +19,7 @@ class ExpenseCategorySelector extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     return FilledButton(
       style: ButtonStyle(
+        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 7)),
         backgroundColor: WidgetStatePropertyAll(category.backgroundColor),
       ),
       onPressed: onPressed,
@@ -26,9 +27,7 @@ class ExpenseCategorySelector extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: 5,
         children: [
-          selected
-              ? Icon(Icons.check, color: category.textColor)
-              : SizedBox.shrink(),
+          if (selected) Icon(Icons.check, color: category.textColor),
           Text(
             category.name,
             style: TextStyle(color: category.textColor, fontSize: 13),
