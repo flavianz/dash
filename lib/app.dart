@@ -17,25 +17,35 @@ class _AppState extends ConsumerState<App> {
   @override
   Widget build(BuildContext context) {
     final destinations = [
-      ("/expenses", NavigationDestination(label: "Augaben", icon: Icon(Icons.attach_money))),
-      ("/notifications", NavigationDestination(label: "Nachrichten", icon: Icon(Icons.notifications_none))),
+      (
+        "/expenses",
+        NavigationDestination(
+          label: "Ausgaben",
+          icon: Icon(Icons.attach_money),
+        ),
+      ),
+      (
+        "/notifications",
+        NavigationDestination(
+          label: "Nachrichten",
+          icon: Icon(Icons.notifications_none),
+        ),
+      ),
     ];
 
     return Scaffold(
       body: Padding(padding: EdgeInsets.all(12), child: widget.child),
-      bottomNavigationBar:
-          NavigationBar(
-                destinations:
-                    destinations.map((dest) => dest.$2).toList(),
-                selectedIndex: pageIndex,
-                onDestinationSelected: (i) {
-                  setState(() {
-                    pageIndex = i;
-                    context.go(destinations[i].$1);
-                  });
-                },
-                elevation: 5,
-              ),
+      bottomNavigationBar: NavigationBar(
+        destinations: destinations.map((dest) => dest.$2).toList(),
+        selectedIndex: pageIndex,
+        onDestinationSelected: (i) {
+          setState(() {
+            pageIndex = i;
+            context.go(destinations[i].$1);
+          });
+        },
+        elevation: 5,
+      ),
     );
   }
 }

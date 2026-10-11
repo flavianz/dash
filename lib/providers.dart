@@ -1,5 +1,6 @@
 import 'package:dash/core/expense.dart';
 import 'package:dash/core/expense_category.dart';
+import 'package:dash/core/expense_preset.dart';
 import 'package:dash/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,3 +25,13 @@ final expenseCategoriesProvider =
           .snapshots()
           .map((docs) => docs.docs.map(ExpenseCategory.fromDoc).toList());
     });
+
+final expensePresetsProvider = StreamProvider.autoDispose<List<ExpensePreset>>((
+  ref,
+) {
+  return firestore
+      .collection("expense_presets")
+      .orderBy("order")
+      .snapshots()
+      .map((docs) => docs.docs.map(ExpensePreset.fromDoc).toList());
+});

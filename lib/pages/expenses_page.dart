@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash/components/expense_category_badge.dart';
+import 'package:dash/components/expense_preset_button.dart';
 import 'package:dash/core/expense_category.dart';
 import 'package:dash/providers.dart';
 import 'package:dash/utils/date_extension.dart';
@@ -31,6 +32,7 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
   Widget build(BuildContext context) {
     final expensesResult = ref.watch(expensesProvider);
     final expenseCategoryResult = ref.watch(expenseCategoriesProvider);
+    final expensePresetsResult = ref.watch(expensePresetsProvider);
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -49,7 +51,46 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Expanded(child: Center()),
+                      Expanded(
+                        child: expensePresetsResult.when(
+                          data: (expensePresets) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: GridView.count(
+                                childAspectRatio: 2,
+                                mainAxisSpacing: 5,
+                                crossAxisSpacing: 5,
+                                crossAxisCount: 3,
+                                children: expensePresets.map((expensePreset) {
+                                  return ExpensePresetButton(
+                                    expensePreset: expensePreset,
+                                    onPressed: () {
+                                      firestore.collection("expenses").add({
+                                        "description":
+                                            expensePreset.description,
+                                        "amount": expensePreset.amount,
+                                        "category_id": expensePreset.categoryId,
+                                        "creation_timestamp":
+                                            Timestamp.fromDate(DateTime.now()),
+                                        "payment_timestamp": Timestamp.fromDate(
+                                          DateTime.now(),
+                                        ),
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            );
+                          },
+                          error: (error, stackTrace) {
+                            print(error);
+                            print(stackTrace);
+                            return Center(child: Text("$error"));
+                          },
+                          loading: () =>
+                              Center(child: CircularProgressIndicator()),
+                        ),
+                      ),
                       Row(
                         spacing: 5,
                         children: [
