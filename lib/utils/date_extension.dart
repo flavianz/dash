@@ -9,6 +9,7 @@ extension DateExtension on DateTime {
           6 => "JUN",
           7 => "JUL",
           8 => "AUG",
+          8 => "AUG",
           9 => "SEP",
           10 => "OKT",
           11 => "NOV",

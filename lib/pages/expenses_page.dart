@@ -174,9 +174,7 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                               ? null
                               : () async {
                                   firestore.collection("expenses").add({
-                                    "amount": double.parse(
-                                      amountController.text,
-                                    ),
+                                    "amount": num.parse(amountController.text),
                                     "description": descriptionController.text,
                                     "category_id": selectedCategoryId!,
                                     "creation_timestamp": Timestamp.fromDate(
@@ -258,67 +256,65 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    spacing: 16,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).splashColor,
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(8),
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 4,
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                expense.paymentTimestamp.day
-                                                    .toString(),
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                              Text(
-                                                expense
-                                                    .paymentTimestamp
-                                                    .monthAbbreviation,
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).splashColor,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(8),
                                       ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 4,
+                                      ),
+                                      child: Column(
                                         children: [
                                           Text(
-                                            expense.description,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                            ),
+                                            expense.paymentTimestamp.day
+                                                .toString(),
+                                            style: TextStyle(fontSize: 18),
                                           ),
-                                          ExpenseCategoryBadge(
-                                            category: ref.watch(
-                                              expenseCategoryProvider(
-                                                expense.categoryId,
-                                              ),
+                                          Text(
+                                            expense
+                                                .paymentTimestamp
+                                                .monthAbbreviation,
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          expense.description,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        ExpenseCategoryBadge(
+                                          category: ref.watch(
+                                            expenseCategoryProvider(
+                                              expense.categoryId,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   Text(
                                     "${expense.amount.toStringAsFixed(2)} Fr.",
                                     style: TextStyle(
-                                      fontSize: 25,
+                                      fontSize: 22,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),

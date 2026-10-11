@@ -34,7 +34,9 @@ class _AppState extends ConsumerState<App> {
     ];
 
     return Scaffold(
-      body: Padding(padding: EdgeInsets.all(12), child: widget.child),
+      body: SafeArea(
+        child: Padding(padding: EdgeInsets.all(12), child: widget.child),
+      ),
       bottomNavigationBar: NavigationBar(
         destinations: destinations.map((dest) => dest.$2).toList(),
         selectedIndex: pageIndex,

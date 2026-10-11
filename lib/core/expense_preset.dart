@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ExpensePreset {
   String id;
   String description;
-  double amount;
+  num amount;
   String categoryId;
 
   ExpensePreset(this.id, this.description, this.amount, this.categoryId);
@@ -11,7 +11,7 @@ class ExpensePreset {
   factory ExpensePreset.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     final description = data["description"] as String;
-    final amount = data["amount"] as double;
+    final amount = data["amount"] as num;
     final categoryId = data["category_id"] as String;
 
     return ExpensePreset(doc.id, description, amount, categoryId);

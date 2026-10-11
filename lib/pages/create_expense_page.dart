@@ -90,7 +90,7 @@ class _CreateExpensePageState extends ConsumerState<CreateExpensePage> {
                   ? null
                   : () {
                       firestore.collection("expenses").add({
-                        "amount": double.parse(amountController.text),
+                        "amount": num.parse(amountController.text),
                         "description": descriptionController.text,
                         "category_id": selectedCategoryId!,
                         "creation_timestamp": Timestamp.fromDate(
