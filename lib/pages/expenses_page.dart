@@ -598,7 +598,7 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                                                 meta: meta,
                                                 space: 0,
                                                 child: i.toInt() % 100 == 0
-                                                    ? Text(i.toString() + " ")
+                                                    ? Text("${i.toInt()} ")
                                                     : Container(),
                                               );
                                             },
