@@ -9,7 +9,6 @@ extension DateExtension on DateTime {
           6 => "JUN",
           7 => "JUL",
           8 => "AUG",
-          8 => "AUG",
           9 => "SEP",
           10 => "OKT",
           11 => "NOV",
@@ -21,5 +20,23 @@ extension DateExtension on DateTime {
 
   bool isSameDate(DateTime other) {
     return year == other.year && month == other.month && other.day == day;
+  }
+
+  String dateString() {
+    return "$day. ${switch (month) {
+      1 => "Januar",
+      2 => "Februar",
+      3 => "März",
+      4 => "April",
+      5 => "Mai",
+      6 => "Juni",
+      7 => "Juli",
+      8 => "August",
+      9 => "September",
+      10 => "Oktober",
+      11 => "November",
+      12 => "Dezember",
+      _ => "Error",
+    }}${year == DateTime.now().year ? "" : " $year"}";
   }
 }

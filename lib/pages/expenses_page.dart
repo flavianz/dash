@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dash/components/expense_category_badge.dart';
 import 'package:dash/components/expense_preset_button.dart';
@@ -10,6 +8,7 @@ import 'package:dash/utils/sum.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../components/expense_category_selector.dart';
 import '../core/expense.dart';
@@ -114,6 +113,7 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                           SizedBox(
                             width: 100,
                             child: TextField(
+                              keyboardType: TextInputType.number,
                               autofocus: true,
                               controller: amountController,
                               decoration: InputDecoration(hintText: "0.00 CHF"),
@@ -148,9 +148,9 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                         child: expenseCategoryResult.map(
                           data: (data) => Wrap(
                             alignment: WrapAlignment.center,
-                            runSpacing: 10,
+                            runSpacing: 4,
                             crossAxisAlignment: WrapCrossAlignment.center,
-                            spacing: 10,
+                            spacing: 8,
                             children: data.value
                                 .map(
                                   (category) => ExpenseCategorySelector(
@@ -221,13 +221,18 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                           final expense = expenses[i];
                           return Dismissible(
                             key: Key(expense.id),
-                            background: Container(
+                            secondaryBackground: Container(
                               color: Colors.redAccent,
                               alignment: Alignment.centerRight,
-                              padding: EdgeInsets.only(left: 20),
+                              padding: EdgeInsets.only(right: 20),
                               child: Icon(Icons.delete, color: Colors.white),
                             ),
-                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              color: Colors.greenAccent,
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.only(left: 20),
+                              child: Icon(Icons.edit, color: Colors.white),
+                            ),
                             confirmDismiss: (direction) async {
                               if (direction == DismissDirection.endToStart) {
                                 await firestore
@@ -255,6 +260,16 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                                     ),
                                   );
                                 }
+                              } else if (direction ==
+                                  DismissDirection.startToEnd) {
+                                // edit
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return ExpenseEditDialog(expense: expense);
+                                  },
+                                );
+                                return false;
                               }
                               return true;
                             },
@@ -456,7 +471,7 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                                                       expenseCategoryTotal /
                                                               total >
                                                           0.05
-                                                      ? "${expenseCategoryTotal.toDouble().roundToDouble().toStringAsFixed(2)} Fr."
+                                                      ? "${expenseCategoryTotal.toStringAsFixed(2)} Fr."
                                                       : "",
                                                   color:
                                                       category.backgroundColor,
@@ -483,6 +498,7 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                                           "${total.toStringAsFixed(2)} Fr.",
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
+                                            fontSize: 24,
                                           ),
                                         ),
                                       ),
@@ -553,9 +569,6 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                                   final categories =
                                       expenseCategoryResult.value ?? [];
 
-                                  final total = expenses
-                                      .map((expense) => expense.amount)
-                                      .sum();
                                   return BarChart(
                                     BarChartData(
                                       borderData: FlBorderData(show: false),
@@ -651,6 +664,131 @@ class _ExpensesPageState extends ConsumerState<ExpensesPage> {
                   ),
                 ],
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ExpenseEditDialog extends ConsumerStatefulWidget {
+  final Expense expense;
+  const ExpenseEditDialog({super.key, required this.expense});
+
+  @override
+  ConsumerState<ExpenseEditDialog> createState() => _ExpenseEditDialogState();
+}
+
+class _ExpenseEditDialogState extends ConsumerState<ExpenseEditDialog> {
+  final editDescriptionController = TextEditingController();
+  final editAmountController = TextEditingController();
+
+  DateTime editPaymentDate = DateTime.now();
+  String? editSelectedCategoryId;
+
+  bool hasBeenInit = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final expenseCategoryResult = ref.watch(expenseCategoriesProvider);
+
+    if (!hasBeenInit) {
+      editDescriptionController.text = widget.expense.description;
+      editAmountController.text = widget.expense.amount.toString();
+      editPaymentDate = widget.expense.paymentTimestamp;
+      editSelectedCategoryId = widget.expense.categoryId;
+      hasBeenInit = true;
+    }
+
+    return Dialog(
+      child: Padding(
+        padding: EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              "Ausgabe bearbeiten",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            TextField(controller: editDescriptionController),
+            TextField(controller: editAmountController),
+            SizedBox(height: 12),
+            FilledButton.tonalIcon(
+              onPressed: () async {
+                final newDate = await showDatePicker(
+                  context: context,
+                  initialDate: editPaymentDate,
+                  firstDate: DateTime(2007, 09, 14),
+                  lastDate: DateTime(2200, 1, 1),
+                );
+                if (newDate != null) {
+                  setState(() {
+                    editPaymentDate = newDate;
+                  });
+                }
+              },
+              iconAlignment: IconAlignment.start,
+              label: Text(editPaymentDate.dateString()),
+              icon: Icon(Icons.calendar_month),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: expenseCategoryResult.map(
+                data: (data) => Wrap(
+                  alignment: WrapAlignment.center,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  children: data.value
+                      .map(
+                        (category) => ExpenseCategorySelector(
+                          category: category,
+                          selected: editSelectedCategoryId == category.id,
+                          onPressed: () {
+                            setState(() {
+                              editSelectedCategoryId = category.id;
+                            });
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+                error: (error) {
+                  print(error);
+                  return Center(child: Text("Error: $error"));
+                },
+                loading: (_) => Center(child: CircularProgressIndicator()),
+              ),
+            ),
+            Expanded(child: Center()),
+            Row(
+              spacing: 6,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                OutlinedButton(
+                  onPressed: () => context.pop(),
+                  child: Text("Abbrechen"),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    firestore
+                        .collection("expenses")
+                        .doc(widget.expense.id)
+                        .update({
+                          "amount": double.parse(editAmountController.text),
+                          "description": editDescriptionController.text,
+                          "category_id": editSelectedCategoryId,
+                          "creation_timestamp": Timestamp.fromDate(
+                            DateTime.now(),
+                          ),
+                          "payment_timestamp": editPaymentDate,
+                        });
+                    context.pop();
+                  },
+                  child: Text("Speichern"),
+                ),
+              ],
             ),
           ],
         ),
